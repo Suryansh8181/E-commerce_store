@@ -1,0 +1,76 @@
+{% extends "shop/base.html" %}
+{% load static %}
+<style>
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+</style>
+{% block title %}
+    Your shopping cart
+{% endblock %}
+{% block content %}
+  <h1>Your shopping cart</h1>
+  <table class="cart">
+        <thead>
+          <tr>
+            <th>Image&nbsp</th>
+            <th>Product&nbsp&nbsp</th>
+            <th>Quantity&nbsp</th>
+            <th>Unit price&nbsp</th>
+            <th>Price&nbsp</th>
+            <th>Remove&nbsp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart %}
+            {% with product=item.product %}
+              <tr>
+                <td>
+                  <a href="{{ product.get_absolute_url }}">
+                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}" alt="..." style="height: 100px; width: auto">&nbsp
+                  </a>
+                </td>
+                <td><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></td>
+                <td>
+                  <form action="{% url "cart:cart_add" product.id %}" method="post">
+                    {{ item.update_quantity_form.quantity }}
+                    {{ item.update_quantity_form.update }}&nbsp
+                    <input class="btn btn-primary" type="submit" value="Update">
+                    {% csrf_token %}&nbsp
+                  </form>
+                </td>
+
+                <td class="num">₹{{ item.price }}</td>
+                <td class="num">₹{{ item.total_price }}&nbsp</td>
+
+                <td><a class="btn btn-danger" href="{% url "cart:cart_remove" product.id%}" role="button">Remove</a></td>
+              </tr>
+            {% endwith %}
+          {% endfor %}
+          <p>
+
+          </p>
+          <tr class="total">
+            <div class="center">
+              <td><button type="button" class="btn btn-dark" style="margin-left:100;">Total Amount</button></td>
+              <td colspan="1"></td>
+              <td class="num" style="margin:10px"><h3>₹{{ cart.get_total_price }}</h3></td>
+            </div>
+          </tr>
+        </tbody>
+      </table>
+      <p class="text-right">
+        <a href="{% url "shop:product_list" %}" role="button" class="btn btn-warning">Continue shopping</a>
+
+        <br>
+        <br>
+        <a>
+          <a href="#" role="button" class="btn btn-success">Checkout</a>
+        </a>
+      </p>
+{% endblock %}
